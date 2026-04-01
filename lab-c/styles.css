@@ -1,0 +1,30 @@
+body {
+  background-color: #e6f1fc;
+  margin: 0;
+}
+
+.container-map{
+  display: grid;
+  grid-template-columns: auto auto;
+  align-content: center;
+  gap: 100px;
+  margin: 50px;
+  margin-bottom: 10px;
+}
+
+h1{
+  display: inline;
+  text-align: center;
+}
+
+#map{
+  height:500px;
+  width: 100%;
+  border: black 2px solid;
+  background: azure;
+}
+#table{
+  height:500px;
+  width: 100%;
+  background-image: url("assets/table.jpg");
+}
