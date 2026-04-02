@@ -1,8 +1,7 @@
 class Task {
-  constructor(name, date, id) {
+  constructor(name, date) {
     this.name = name;
     this.date = date;
-    this.id = id;
   }
   update(new_name, new_date) {
     this.name = new_name;
@@ -11,137 +10,147 @@ class Task {
 }
 
 class Todo {
-  constructor(listId, searchId) {
-    this.list = document.getElementById(listId);
-    this.search = searchId ? document.getElementById(searchId) : null;
-    this.tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    this.last_id = this.tasks.length ? Math.max(...this.tasks.map(t => t.id)) + 1 : 0;
+  constructor(list_id) {
+    this.list = document.getElementById(list_id);
+    const raw = JSON.parse(localStorage.getItem("tasks"))|| [];
+    this.tasks = raw.map(task => new Task(task.name, task.date));
 
-    if(this.search){
-      this.search.addEventListener("input", () => this.draw());
-    }
+
   }
 
-
-  draw() {
-    const term = this.search.value.toLowerCase();
+  draw(){
+    const filter = document.getElementById("search").value
     this.list.innerHTML = "";
+    var task_list = []
+    if( filter.length >= 2) {
+      task_list = this.tasks.filter(task => task.name.includes(filter));
+    }
+    else {
+       task_list = this.tasks
+    }
+    task_list.forEach(task =>(
+      this.list.appendChild(this.create_entry(task))
+    ))
+  }
 
-    this.tasks.forEach(task => {
-      if (term.length >= 2 && !task.name.toLowerCase().includes(term)) return;
+  add(){
+    const name = document.getElementById("input").value
+    const date = document.getElementById("date").value
+    this.tasks.push(new Task(name,date))
+    localStorage.setItem("tasks", JSON.stringify(this.tasks));
+    console.log("DODANO")
+    this.draw()
+  }
 
-      const li = document.createElement("li");
+  delete(task_to_delete){
+    this.tasks = this.tasks.filter(task => task !== task_to_delete)
+    localStorage.setItem("tasks", JSON.stringify(this.tasks));
+    this.draw();
+  }
 
-      const span_text = document.createElement("span");
-      let textContent = task.name;
-      if (term.length >= 2) {
-        const regex = new RegExp(`(${term})`, "gi");
-        textContent = task.name.replace(regex, "<mark>$1</mark>");
-      }
-      span_text.innerHTML = textContent;
-      span_text.className = "text";
+  formatDate(dateString) {
+    const date = new Date(dateString);
+    if (isNaN(date)) return dateString;
 
-      const span_date = document.createElement("span");
-      if (task.date) {
-        const [datePart, timePart] = task.date.split("T");
-        const [year, month, day] = datePart.split("-");
-        const [hours, minutes] = timePart.split(":");
-        span_date.textContent = `${day}.${month}.${year} ${hours}:${minutes}`;
-      } else {
-        span_date.textContent = "";
-      }
-      span_date.className = "date";
+    const pad = (n) => n.toString().padStart(2, '0');
 
-      const editBtn = document.createElement("button");
-      editBtn.textContent = "✏️";
-      editBtn.className = "task-btn";
-      editBtn.addEventListener("click", e => {
-        e.stopPropagation();
-        this.enableEdit(task.id, li);
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const day = pad(date.getDate());
+    const month = pad(date.getMonth() + 1);
+    const year = date.getFullYear();
+
+    return `${hours}:${minutes} ${day}:${month}:${year}`;
+  }
+
+  highlight(text, filter) {
+    if (!filter) return text;
+    const index = text.toLowerCase().indexOf(filter);
+    if (index === -1) return text;
+
+    const before = text.slice(0, index);
+    const match = text.slice(index, index + filter.length);
+    const after = text.slice(index + filter.length);
+
+    return `${before}<span style="background: yellow">${match}</span>${after}`;
+  }
+  create_entry(task){
+
+    const li = document.createElement("li");
+    li.className = "task-item";
+
+    const left = document.createElement("div");
+    left.className = "left";
+    left.classList.add("editing");
+
+    const textSpan = document.createElement("span");
+    textSpan.className = "text";
+
+    const filter = document.getElementById("search").value.toLowerCase();
+    const taskName = task.name;
+
+
+
+    textSpan.innerHTML = `${this.highlight(taskName, filter)} ${this.formatDate(task.date)}`;
+
+    left.appendChild(textSpan);
+    li.appendChild(left);
+
+    textSpan.onclick = () => {
+      left.innerHTML = "";
+
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.value = task.name;
+
+      const dateInput = document.createElement("input");
+      dateInput.type = "datetime-local";
+      dateInput.value = task.date;
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+
+
+      const saveChanges = () => {
+        task.name = nameInput.value;
+        task.date = dateInput.value;
+        localStorage.setItem("tasks", JSON.stringify(this.tasks));
+        this.draw();
+      };
+
+      deleteBtn.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        this.delete(task);
+        this.draw();
       });
 
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "X";
-      delBtn.className = "task-btn";
-      delBtn.addEventListener("click", () => this.remove(task.id));
+      dateInput.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+      });
 
-      const leftDiv = document.createElement("div");
-      leftDiv.className = "left";
-      leftDiv.appendChild(span_text);
-      leftDiv.appendChild(span_date);
+      nameInput.addEventListener("blur", saveChanges);
+      dateInput.addEventListener("blur", saveChanges);
 
-      const rightDiv = document.createElement("div");
-      rightDiv.className = "right";
-      rightDiv.appendChild(editBtn);
-      rightDiv.appendChild(delBtn);
+      left.appendChild(nameInput);
+      left.appendChild(dateInput);
+      left.appendChild(deleteBtn);
 
-      li.appendChild(leftDiv);
-      li.appendChild(rightDiv);
-      this.list.appendChild(li);
-    });
-
-    this.save();
-  }
-
-  save() {
-    localStorage.setItem("tasks", JSON.stringify(this.tasks));
-  }
-
-  add(name, date) {
-    if (!name || name.length < 3 || name.length > 255) return;
-    if (date && new Date(date) < new Date()) return;
-    this.tasks.push(new Task(name, date, this.last_id));
-    this.last_id++;
-    this.draw();
-  }
-
-  remove(id) {
-    this.tasks = this.tasks.filter(t => t.id !== id);
-    this.draw();
-  }
-
-  enableEdit(id, li) {
-    const task = this.tasks.find(t => t.id === id);
-    const textInput = document.createElement("input");
-    textInput.value = task.name;
-    textInput.className = "edit-text";
-    const dateInput = document.createElement("input");
-    dateInput.type = "datetime-local";
-    dateInput.value = task.date || "";
-    dateInput.className = "edit-date";
-    li.querySelector(".text").replaceWith(textInput);
-    li.querySelector(".date").replaceWith(dateInput);
-    textInput.focus();
-
-    const save = () => {
-      if (!textInput.value || textInput.value.length < 3 || textInput.value.length > 255) return;
-      if (dateInput.value && new Date(dateInput.value) < new Date()) return;
-      task.update(textInput.value, dateInput.value);
-      this.draw();
+      nameInput.focus();
     };
 
-    textInput.addEventListener("blur", save);
-    dateInput.addEventListener("blur", save);
-    textInput.addEventListener("keydown", e => { if (e.key === "Enter") save() });
-    dateInput.addEventListener("keydown", e => { if (e.key === "Enter") save() });
+    return li;
   }
+
+
 }
 
-const todo = new Todo("list", "search");
-document.todo = todo;
-todo.draw();
-
+const todo = new Todo("list");
+todo.draw()
 document.getElementById("form").addEventListener("submit", e => {
   e.preventDefault();
-  const text = document.getElementById("input").value;
-  const date = document.getElementById("date").value;
-  todo.add(text, date);
-  document.getElementById("input").value = "";
-  document.getElementById("date").value = "";
+  todo.add();
 });
 
-const searchInput = document.getElementById("search");
-searchInput.addEventListener("input", e => {
-  const term = e.target.value;
-  todo.drawFiltered(term);
+document.getElementById("search").addEventListener("input", () => {
+  todo.draw();
 });
