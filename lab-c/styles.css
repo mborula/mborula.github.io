@@ -4,12 +4,10 @@ body {
 }
 
 .container-map{
-  display: grid;
-  grid-template-columns: auto auto;
-  align-content: center;
-  gap: 100px;
+  display: flex;
+  justify-content: center;
+  gap: 50px;
   margin: 50px;
-  margin-bottom: 10px;
 }
 
 h1{
@@ -18,15 +16,36 @@ h1{
 }
 
 #map{
-  height:500px;
-  width: 100%;
+  height:400px;
+  width: 600px;
   border: black 2px solid;
   background: azure;
-}
-#table{
-  height:500px;
-  width: 100%;
-  background-image: url("assets/table.jpg");
+  margin: 0;
 }
 
+#table {
+  height:400px;
+  width: 600px;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-template-rows: 25% 25% 25% 25%;
+  border: black 2px solid;
+  margin: 0;
+
+}
+
+.slot {
+  width: 150px;
+  height: 100px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
