@@ -9,7 +9,6 @@ let mapa;
 const tiles = [];
 const table = document.getElementById("table");
 
-
 function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(success, error);
@@ -25,33 +24,32 @@ function error() {
   getMap([53.447084, 14.49183]);
 }
 
-
 function getMap(position) {
   mapa = L.map("map").setView(position, 18);
 
   L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     {
-      attribution:
-        '&copy; <a href="https://www.esri.com/">Esri</a>'
+      attribution: '&copy; <a href="https://www.esri.com/">Esri</a>'
     }
   ).addTo(mapa);
 }
 
-
 function getMapImage() {
+  handleNotification();
+
   leafletImage(mapa, function (err, canvas) {
     if (err) return;
 
     tiles.length = 0;
 
+    alert("Saved map as image")
     divideToTiles(canvas);
 
     createBoard();
     displayTiles();
   });
 }
-
 
 function divideToTiles(canvas) {
   const tileWidth = canvas.width / 4;
@@ -83,15 +81,6 @@ function divideToTiles(canvas) {
   }
 }
 
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-
 function displayTiles() {
   const container = document.querySelector(".container-puzzle");
   container.innerHTML = "";
@@ -104,12 +93,18 @@ function displayTiles() {
 
     img.addEventListener("dragstart", (e) => {
       e.dataTransfer.setData("tile-id", tile.id);
+      e.dataTransfer.setData("from-index", "pool");
     });
 
     container.appendChild(img);
   });
 }
 
+function removeFromPool(id) {
+  const container = document.querySelector(".container-puzzle");
+  const img = container.querySelector(`img[data-id="${id}"]`);
+  if (img) img.remove();
+}
 
 function createBoard() {
   table.innerHTML = "";
@@ -127,17 +122,19 @@ function createBoard() {
       e.preventDefault();
 
       const id = e.dataTransfer.getData("tile-id");
-      const tile = tiles.find((t) => t.id === id);
+      const fromIndex = e.dataTransfer.getData("from-index");
 
-      if (!tile) return;
+      const tileEl = document.querySelector(`img[data-id="${id}"]`);
+      if (!tileEl) return;
+
+      const existing = slot.querySelector("img");
+
+      if (existing) {
+        document.querySelector(".container-puzzle").appendChild(existing);
+      }
 
       slot.innerHTML = "";
-
-      const img = document.createElement("img");
-      img.src = tile.canvas.toDataURL();
-      img.dataset.id = tile.id;
-
-      slot.appendChild(img);
+      slot.appendChild(tileEl);
 
       checkWin();
     });
@@ -157,15 +154,14 @@ function checkWin() {
     const [x, y] = img.dataset.id.split("-").map(Number);
     const correctIndex = y * 4 + x;
 
-    if (correctIndex !== i) {
-      return;
-    }
+    if (correctIndex !== i) return;
   }
 
   win();
 }
 
 function win() {
+  console.log("Success, You solved puzzle!")
   if (Notification.permission === "granted") {
     new Notification("Success", {
       body: "You solved puzzle!"
@@ -174,4 +170,11 @@ function win() {
     alert("Success, You solved puzzle!");
   }
 }
-console.log(Notification.permission);
+
+async function handleNotification() {
+  if (!("Notification" in window)) return;
+
+  if (Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+}
