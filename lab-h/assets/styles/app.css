@@ -1,0 +1,33 @@
+body {
+    background-color: #f5f7fa;
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+}
+
+.card {
+    border-radius: 15px;
+}
+
+footer {
+    font-size: 14px;
+}
+
+h1 {
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .card {
+        padding: 1rem !important;
+    }
+
+    .navbar-brand {
+        font-size: 1rem;
+    }
+}
