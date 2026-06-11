@@ -1,0 +1,22 @@
+<label>Name:</label>
+<div>
+    <input type="text"
+       name="name"
+       value="{{ auto.name if auto else '' }}">
+
+<label>Year:</label>
+<input type="text"
+       name="year"
+       value="{{ auto.year if auto else '' }}">
+
+<label>Price:</label>
+<input type="number"
+       step="0.01"
+       name="price"
+       value="{{ auto.price if auto else '' }}">
+
+<label>Description:</label>
+<textarea name="description">{{ auto.description if auto else '' }}</textarea>
+
+</div>
+<button type="submit">Save</button>

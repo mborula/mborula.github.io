@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Auto List{% endblock %}
+{% block content %}
+<h2>Auto List</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Year</th>
+        <th>Price</th>
+        <th>Description</th>
+        <th>Actions</th>
+    </tr>
+    {% for auto in autos %}
+    <tr>
+        <td>{{ auto.name }}</td>
+        <td>{{ auto.year }}</td>
+        <td>{{ auto.price }}</td>
+        <td>{{ auto.description }}</td>
+        <td>
+            <a class="btn" href="{{ url_for('auto_show', auto_id=auto.id) }}">Details</a>
+            <a class="btn" href="{{ url_for('auto_edit', auto_id=auto.id) }}">Edit</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

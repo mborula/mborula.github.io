@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Auto Details{% endblock %}
+
+{% block content %}
+
+<h2>{{ auto.name }}</h2>
+
+<p><strong>Year:</strong> {{ auto.year }}</p>
+<p><strong>Price:</strong> {{ auto.price }}</p>
+<p><strong>Description:</strong> {{ auto.description }}</p>
+
+<a class="btn" href="{{ url_for('auto_edit', auto_id=auto.id) }}">
+    Edit
+</a>
+
+<a class="btn" href="{{ url_for('auto_index') }}">
+    Back to List
+</a>
+
+{% endblock %}
