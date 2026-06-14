@@ -1,0 +1,16 @@
+<%- include('../partials/header', {
+title: `Edit Auto ${auto.name}`,
+bodyClass: 'edit' }) %>
+
+<h1>Edit Auto <%= auto.name %></h1>
+<form action="/autos/<%= auto.id %>/edit" method="post" class="edit-form">
+    <%- include('_form', { auto: auto }) %>
+</form>
+<ul class="action-list">
+    <li><a href="/autos">Back to list</a></li>
+    <li><form action="/autos/<%= auto.id %>/delete" method="post">
+            <input type="submit" value="Delete" onclick="return confirm('Are you sure?')">
+        </form>
+    </li>
+</ul>
+<%- include('../partials/footer') %>

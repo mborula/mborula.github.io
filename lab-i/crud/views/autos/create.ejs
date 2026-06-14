@@ -1,0 +1,11 @@
+<%- include('../partials/header', {
+title: 'Create Auto',
+bodyClass: 'edit' }) %>
+<h1>Create Auto</h1>
+<form action="/autos/create" method="post" class="edit-form">
+    <%- include('_form', { auto: null }) %>
+</form>
+<a href="/autos">
+    Back to list
+</a>
+<%- include('../partials/footer') %>

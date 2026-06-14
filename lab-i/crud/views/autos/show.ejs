@@ -1,0 +1,15 @@
+<%- include('../partials/header', {
+title: auto.name,
+bodyClass: 'show'
+}) %>
+
+<h1><%= auto.name %></h1>
+<p><strong>Year:</strong><%= auto.year %></p>
+<p><strong>Price:</strong><%= auto.price %></p>
+<p><strong>Description:</strong><br><%= auto.description %></p>
+<ul class="action-list">
+    <li><a href="/autos">Back to list</a></li>
+    <li><a href="/autos/<%= auto.id %>/edit">Edit</a></li>
+</ul>
+
+<%- include('../partials/footer') %>

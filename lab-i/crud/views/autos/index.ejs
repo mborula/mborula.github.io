@@ -1,0 +1,18 @@
+<%- include('../partials/header', {
+title: 'Auto List',
+bodyClass: 'index'
+}) %>
+<h1>Autos List</h1>
+<a href="/autos/create">Create new</a>
+<ul class="index-list">
+    <% autos.forEach(auto => { %>
+        <li>
+            <h3><%= auto.name %></h3>
+            <ul class="action-list">
+                <li><a href="/autos/<%= auto.id %>">Details</a></li>
+                <li><a href="/autos/<%= auto.id %>/edit">Edit</a></li>
+            </ul>
+        </li>
+    <% }) %>
+</ul>
+<%- include('../partials/footer') %>

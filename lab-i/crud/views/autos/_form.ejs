@@ -1,0 +1,42 @@
+<div class="form-group">
+    <label for="name">Name</label>
+    <input
+            type="text"
+            id="name"
+            name="name"
+            value="<%= auto ? auto.name : '' %>"
+    >
+</div>
+
+<div class="form-group">
+    <label for="year">Year</label>
+    <input
+            type="text"
+            id="year"
+            name="year"
+            value="<%= auto ? auto.year : '' %>"
+    >
+</div>
+
+<div class="form-group">
+    <label for="price">Price</label>
+    <input
+            type="text"
+            id="price"
+            name="price"
+            value="<%= auto ? auto.price : '' %>"
+    >
+</div>
+
+<div class="form-group">
+    <label for="description">Description</label>
+    <textarea
+            id="description"
+            name="description"
+    ><%= auto ? auto.description : '' %></textarea>
+</div>
+
+<div class="form-group">
+    <label></label>
+    <input type="submit" value="Submit">
+</div>
